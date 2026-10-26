@@ -10,6 +10,7 @@
   --border: #e5e5e5;
   --ring: #0066ff;
   --frame: #ffffff;
+  --accent: #2f4858;
   --font-sans: var(--font-geist-sans), system-ui, -apple-system, sans-serif;
   --font-mono: var(--font-geist-mono), ui-monospace, monospace;
   --font-serif: var(--font-fraunces), ui-serif, Georgia, serif;
@@ -23,6 +24,7 @@
   --border: #262626;
   --ring: #3b82f6;
   --frame: #0a0a0a;
+  --accent: #9ebecd;
 }
 
 @theme inline {
@@ -32,6 +34,7 @@
   --color-muted-foreground: var(--muted-foreground);
   --color-border: var(--border);
   --color-ring: var(--ring);
+  --color-accent: var(--accent);
   --font-sans: var(--font-sans);
   --font-mono: var(--font-mono);
   --font-serif: var(--font-serif);
@@ -46,6 +49,7 @@ html.dark {
 }
 
 @media (prefers-reduced-motion: reduce) {
+
   *,
   *::before,
   *::after {
@@ -107,6 +111,7 @@ html[data-theme-anim="1"]::view-transition-new(root) {
   from {
     clip-path: circle(0px at var(--theme-cx) var(--theme-cy));
   }
+
   to {
     clip-path: circle(var(--theme-r) at var(--theme-cx) var(--theme-cy));
   }
@@ -168,6 +173,7 @@ html[data-theme-anim="1"]::view-transition-new(root) {
 }
 
 @media (max-width: 850px) {
+
   .site-frame,
   .site-corner {
     display: none;

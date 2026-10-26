@@ -3,9 +3,9 @@
 import React, { useRef, useMemo, useCallback, useState } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
+import { cn } from "@/lib/utils";
 
-const cn = (...classes: (string | undefined | boolean)[]): string =>
-    classes.filter(Boolean).join(" ");
+
 
 export interface WatercolorProps {
     /** Container width */
@@ -142,10 +142,14 @@ void main() {
 function parseHexColor(hex: string): [number, number, number] {
     const match = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
     if (!match) return [0, 0, 0];
+
+    const [, red, green, blue] = match;
+    if (!red || !green || !blue) return [0, 0, 0];
+
     return [
-        parseInt(match[1], 16) / 255,
-        parseInt(match[2], 16) / 255,
-        parseInt(match[3], 16) / 255,
+        parseInt(red, 16) / 255,
+        parseInt(green, 16) / 255,
+        parseInt(blue, 16) / 255,
     ];
 }
 
@@ -217,32 +221,35 @@ const WatercolorScene: React.FC<WatercolorSceneProps> = ({
     useFrame((state, delta) => {
         if (!meshRef.current) return;
         const mat = meshRef.current.material as THREE.ShaderMaterial;
+        const uniforms = mat.uniforms as any;
 
-        mat.uniforms.uTime.value = state.clock.elapsedTime;
-        mat.uniforms.uRes.value.set(
+        if (!uniforms.uTime || !uniforms.uRes || !uniforms.uPointer) return;
+
+        uniforms.uTime.value = state.clock.elapsedTime;
+        uniforms.uRes.value.set(
             size.width * viewport.dpr,
             size.height * viewport.dpr,
         );
-        mat.uniforms.uSpeed.value = speed;
-        mat.uniforms.uScale.value = scale;
-        mat.uniforms.uOctaves.value = octaves;
-        mat.uniforms.uPersist.value = persistence;
-        mat.uniforms.uLacun.value = lacunarity;
-        mat.uniforms.uDrift.value = driftSpeed;
-        mat.uniforms.uWarp.value = warpSpeed;
-        mat.uniforms.uCol1.value.set(...col1Rgb);
-        mat.uniforms.uCol2.value.set(...col2Rgb);
-        mat.uniforms.uGain.value = colorGain;
-        mat.uniforms.uSat.value = saturation;
-        mat.uniforms.uBright.value = brightness;
-        mat.uniforms.uAlpha.value = opacity;
-        mat.uniforms.uCursorActive.value = cursorInteraction ? 1 : 0;
-        mat.uniforms.uCursorIntensity.value = cursorIntensity;
+        uniforms.uSpeed.value = speed;
+        uniforms.uScale.value = scale;
+        uniforms.uOctaves.value = octaves;
+        uniforms.uPersist.value = persistence;
+        uniforms.uLacun.value = lacunarity;
+        uniforms.uDrift.value = driftSpeed;
+        uniforms.uWarp.value = warpSpeed;
+        uniforms.uCol1.value.set(...col1Rgb);
+        uniforms.uCol2.value.set(...col2Rgb);
+        uniforms.uGain.value = colorGain;
+        uniforms.uSat.value = saturation;
+        uniforms.uBright.value = brightness;
+        uniforms.uAlpha.value = opacity;
+        uniforms.uCursorActive.value = cursorInteraction ? 1 : 0;
+        uniforms.uCursorIntensity.value = cursorIntensity;
 
         const ease = 1 - Math.exp(-delta / 0.15);
         smoothPointer.current.x += (pointer[0] - smoothPointer.current.x) * ease;
         smoothPointer.current.y += (pointer[1] - smoothPointer.current.y) * ease;
-        mat.uniforms.uPointer.value.set(
+        uniforms.uPointer.value.set(
             smoothPointer.current.x,
             smoothPointer.current.y,
         );
